@@ -1,0 +1,94 @@
+﻿@model IEnumerable<Product>
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var activeProductCount = Model.Count(p => p.IsActive == true ? true : false);
+    var inactiveProductCount = Model.Count(p => p.IsActive == true ? false : true);
+}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-box"></i> Total Products
+            </div>
+            <div class="card-body">
+                <h1>@Model.Count()</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-money-bill-wave"></i> Total Revenue
+            </div>
+            <div class="card-body">
+                <h1>$@Model.Sum(p => p.Price)</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-toggle-on"></i> Active Products
+            </div>
+            <div class="card-body">
+                <h1>@Model.Count(p => p.IsActive == true ? true : false)</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <i class="fas fa-chart-bar"></i> Products Chart
+    </div>
+    <div class="card-body">
+        <canvas id="productChart" width="400" height="200"></canvas>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Sample data for the chart
+            var productLabels = ['Active', 'Inactive'];
+            var productData = [@activeProductCount, @inactiveProductCount];
+
+            // Chart.js code
+            var ctx = document.getElementById('productChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: productLabels,
+                    datasets: [{
+                        label: 'Product Status',
+                        data: productData,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 99, 132, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
